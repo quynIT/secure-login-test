@@ -11,13 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('categories', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('description');
+            $table->timestamps();
+        });
+        
         Schema::create('foods', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('description');
             $table->string('price');
             $table->timestamps();
+            $table->unsignedInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories') ->onDelete('cascade');
         });
+        
     }
 
     /**
