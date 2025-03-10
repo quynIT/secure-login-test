@@ -2,19 +2,19 @@
 <!-- Form thêm món ăn mới -->
 @section('content')
     
-<h2>Thêm món ăn mới</h2>
+<h2>Thêm món ăn mới haha hehe</h2>
 <form action="{{ route('foods.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <label for="name">Tên món ăn:</label>
-    <input class="border-1" type="text" name="name" required>
+    <input class="border-2" type="text" name="name" required>
     <br>
 
     <label for="description">Mô tả:</label>
-    <input class="border-1" type="text" name="description" required>
+    <input class="border-2" type="text" name="description" required>
     <br>
 
     <label for="price">Giá:</label>
-    <input class="border-1" type="number" name="price" required>
+    <input class="border-2" type="number" name="price" required>
     <br>
 
     <label for="category_id">Danh mục:</label>
@@ -30,7 +30,7 @@
     <input type="file" name="image" required>
     <br>
 
-    <button type="submit" class="border-1 p-2 bg-green-500 rounded-3xl">Thêm món ăn</button>
+    <button type="submit" class="border-2 p-2 bg-green-500 rounded-3xl">Thêm món ăn</button>
 </form>
 <thead>
     <tr>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegisterController;
 use App\Models\Foods;
 use Illuminate\Support\Facades\Route;
 
@@ -16,3 +17,5 @@ Route::post('/foods', [FoodController::class, 'store'])->name('foods.store');
 Route::get('/foods/edit/{id}', [FoodController::class, 'edit'])->name('foods.edit'); 
 Route::post('/foods/update/{id}', [FoodController::class, 'update'])->name('foods.update'); 
 Route::delete('/foods/delete/{id}', [FoodController::class, 'delete'])->name('foods.delete');
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
