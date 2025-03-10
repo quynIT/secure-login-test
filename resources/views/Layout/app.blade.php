@@ -8,8 +8,20 @@
     @vite(['resources/css/app.css', 'resources/js/app.js']) 
 </head>
 <body>
-    <h1 style="width:100%; height:200px; background-color:aquamarine;">Header haha</h1>
+    @include('Layout.header')
     @yield('content')
-    <h1 style="width:100%; height:200px; background-color:aquamarine;">Footer helo</h1>
+    <div id="togetherAIChat" class="floating-chatbot"></div>
+    @include('Layout.chatai')
+    @include('Layout.footer')   
 </body>
 </html>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initTogetherAIChat({
+            companyName: "Connect Work",
+            companyLogo: "Images/Background.png",
+            primaryColor: "#1e67b4",
+            apiKey: "{{ env('TOGETHER_API_KEY') }}" 
+        });
+    });
+</script>
