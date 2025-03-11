@@ -65,7 +65,7 @@
                     <div class="text-center mt-4">
                         <p class="text-sm text-gray-600">
                             Đã có tài khoản? 
-                            <a href="/login" class="text-blue-600 hover:text-blue-800 font-medium">Đăng nhập</a>
+                            <a href="/login" class="text-blue-600 hover:text-blue-800 font-medium"> </a>
                         </p>
                     </div>
                 </form>
