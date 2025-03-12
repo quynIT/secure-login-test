@@ -18,7 +18,16 @@ class FoodController extends Controller
         'category' => $categories 
     ]);
 }
+public function list()
+{
+    $foods = Foods::all();
+    $categories = Category::all(); // Lấy danh sách danh mục
 
+    return view('foods.list', [
+        'foods' => $foods,
+        'category' => $categories 
+    ]);
+}
 public function store(Request $request)
 {
     $request->validate([

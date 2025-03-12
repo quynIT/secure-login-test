@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PostController;
@@ -29,5 +30,13 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware([CustomAuth::class])->group(function () {
     Route::get('/post', [PostController::class, 'post']);
+    // Foods
     Route::get('/foods', [FoodController::class, 'food'])->name('foods.index'); 
+    Route::get('/foods/list', [FoodController::class, 'list'])->name('foods.list');
+    // Cart
+    Route::post('/cart/add', [CartController::class,'addToCart'])->name('cart.add');
+    Route::get('/cart', [CartController::class,'viewCart'])->name('cart.view');
+    Route::post('/cart/remove', [CartController::class,'removeFromCart'])->name('cart.remove');
+    Route::post('/cart/update', [CartController::class,'updateCart'])->name('cart.update');
+    Route::post('/cart/clear', [CartController::class,'clearCart'])->name('cart.clear'); 
 });
