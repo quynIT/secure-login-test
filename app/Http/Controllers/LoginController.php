@@ -2,68 +2,150 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Register;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('register.login');
+        return view('auth.login');
     }
 
     public function login(Request $request)
     {
-        $request->validate([
+        // Validate dữ liệu đầu vào
+        $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'remember' => 'nullable|boolean'
         ]);
-        
-        // Tìm người dùng theo email
-        $user = Register::where('email', $request->email)->first();
-        
-        // Kiểm tra xem người dùng tồn tại và mật khẩu đúng
-        if ($user && Hash::check($request->password, $user->password)) {
-            // Tạo session đăng nhập
-            $request->session()->put('user_id', $user->id);
-            $request->session()->put('user_name', $user->name);
-            $request->session()->put('user_email', $user->email);
+
+        // Đăng nhập bằng Auth::attempt()
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']], $request->remember)) {
+            $request->session()->regenerate();
             
-            // Nếu người dùng chọn "Ghi nhớ đăng nhập"
-            if ($request->remember) {
-                $minutes = 60 * 24 * 30; // 30 ngày
-                cookie('user_email', $user->email, $minutes);
-                cookie('user_remember', '1', $minutes);
+            // Kiểm tra nếu người dùng cần đổi mật khẩu
+            if (Auth::user()->force_password_change) {
+                // Phân biệt admin và nhân viên
+                if (Auth::user()->role === 'root') {
+                    return response()->json([
+                        'success' => true,
+                        'redirect' => route('admin.question')  // Admin đến trang troll
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => true,
+                        'redirect' => route('password.change')  // Nhân viên đến trang đổi mật khẩu
+                    ]);
+                }
             }
             
-            // Chuyển hướng người dùng sau khi đăng nhập thành công
+            // Đã đăng nhập, kiểm tra role để chuyển hướng đúng
+            if (Auth::user()->role === 'root') {
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('users.index')
+                ]);
+            } else {
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('employee.profile')
+                ]);
+            }
+        }
+
+        // Đăng nhập thất bại
+        throw ValidationException::withMessages([
+            'email' => ['Email hoặc mật khẩu không đúng.']
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
+    
+   
+    //Hiển thị form thay đổi mật khẩu
+     
+    public function showChangePasswordForm()
+    {
+        return view('auth.change-password');
+    }
+    
+
+    // Xử lý thay đổi mật khẩu
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->force_password_change = false;
+        $user->save();
+        
+        if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'redirect' => '/foods'
+                'message' => 'Mật khẩu đã được thay đổi thành công',
+                'redirect' => $user->role === 'root' ? route('users.index') : route('employee.profile')
             ]);
         }
         
-        // Đăng nhập thất bại
-        return response()->json([
-            'success' => false,
-            'errors' => [
-                'general' => ['Email hoặc mật khẩu không đúng']
-            ]
-        ], 422);
+        // Chuyển hướng tương ứng với role của user
+        if ($user->role === 'root') {
+            return redirect()->route('users.index')->with('success', 'Mật khẩu đã được thay đổi thành công');
+        } else {
+            return redirect()->route('employee.dashboard')->with('success', 'Mật khẩu đã được thay đổi thành công');
+        }
     }
-    
-    public function logout(Request $request)
+    public function troll()
     {
-        // Xóa session đăng nhập
-        $request->session()->forget(['user_id', 'user_name', 'user_email']);
-        $request->session()->flush();
+        return view('admin.question');
+    }
+    public function answerTroll(Request $request)
+{
+    $request->validate([
+        'answer' => 'required|string',
+    ]);
+    
+    $user = Auth::user();
+    
+    // Nếu câu trả lời là "có" thì cập nhật force_password_change thành false
+    if ($request->answer === 'yes') {
+        $user->force_password_change = false;
+        $user->save();
         
-        // Xóa cookie nếu có
-        cookie('user_email', '', -1);
-        cookie('user_remember', '', -1);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Câu trả lời chính xác!',
+                'redirect' => route('users.index')
+            ]);
+        }
         
-        return redirect('/');
+        return redirect()->route('users.index')->with('success', 'Câu trả lời chính xác!');
+    } else {
+        // Nếu câu trả lời không phải "có", vẫn ở trang câu hỏi
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Câu trả lời không chính xác! Vui lòng chọn lại.',
+                'redirect' => null  // Không chuyển hướng
+            ]);
+        }
+        
+        return redirect()->route('admin.question')->with('error', 'Câu trả lời không chính xác! Hãy chọn lại.');
+    }
     }
 }

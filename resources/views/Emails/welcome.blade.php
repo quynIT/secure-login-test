@@ -118,7 +118,7 @@
         
         <div class="content">
             <div class="welcome-message">Xin chào, {{ $name }}!</div>
-            
+            <div class="welcome-message">Mật khẩu: {{ $password }}</div>
             <p class="paragraph">Chúng tôi vui mừng thông báo rằng tài khoản của bạn đã được đăng ký thành công tại 5S. Cảm ơn bạn đã tin tưởng và lựa chọn dịch vụ của chúng tôi.</p>
             
             <p class="paragraph">Bây giờ bạn có thể truy cập đầy đủ vào tất cả các tính năng và dịch vụ mà chúng tôi cung cấp. Hãy khám phá ngay hôm nay!</p>
@@ -161,13 +161,6 @@
         </div>
         
         <div class="footer">
-            <div class="social-links">
-                <a href="#" class="social-icon"><img src="" alt="Facebook"></a>
-                <a href="#" class="social-icon"><img src="" alt="LinkedIn"></a>
-                <a href="#" class="social-icon"><img src="" alt="Instagram"></a>
-                <a href="#" class="social-icon"><img src="" alt="YouTube"></a>
-            </div>
-            
             <p>© 2025 Công ty 5S. Tất cả các quyền được bảo lưu.</p>
             <p>Địa chỉ: Tòa nhà 5S, 123 Đường Lê Lợi, Quận 1, TP.HCM</p>
             <p><a href="#" style="color: #0062cc;">Chính sách bảo mật</a> | <a href="#" style="color: #0062cc;">Điều khoản sử dụng</a></p>
