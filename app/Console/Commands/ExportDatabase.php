@@ -12,11 +12,11 @@ class ExportDatabase extends Command
 
     public function handle()
     {
-        $dbHost = config('database.connections.pgsql.host', 'localhost');
+        $dbHost = env('DB_HOST', 'localhost');
         $dbPort = config('database.connections.pgsql.port', '5432');
         $dbUser = config('database.connections.pgsql.username', 'postgres');
         $dbPass = config('database.connections.pgsql.password', '123456');
-        $dbName = config('database.connections.pgsql.database', 'laravel_db');
+        $dbName = env('DB_DATABASE', 'laravel_db');
 
         $backupPath = storage_path('app/backup.sql');
 

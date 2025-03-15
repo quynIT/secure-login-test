@@ -43,7 +43,7 @@ class UserService extends BaseService
      */
     public function getAllUsers()
     {
-        return User::with('department')->get();
+        return User::query()->with('department')->get();
     }
 
     /**
@@ -57,7 +57,7 @@ class UserService extends BaseService
         DB::beginTransaction();
         
         try {
-            $validated = $request->all();
+            $validated = $request->only(['name', 'email', 'role', 'department_id', 'password']);
             $password = $validated['password'] ?? Str::random(8);
 
             $userData = [
@@ -109,7 +109,7 @@ class UserService extends BaseService
         DB::beginTransaction();
         
         try {
-            $validated = $request->all();
+            $validated = $request->only(['name', 'email', 'role', 'department_id', 'password']);
             $user = User::findOrFail($id); // Lấy user từ ID
             $oldAvatar = $user->avatar;
             
@@ -160,7 +160,7 @@ class UserService extends BaseService
         DB::beginTransaction();
         
         try {
-            $user = User::findOrFail($id);
+            $user = User::query()->findOrFail($id);
             $avatarPath = $user->avatar;
             
             $result = $user->delete();
@@ -185,7 +185,7 @@ class UserService extends BaseService
         
         try {
             foreach ($userIds as $userId) {
-                $user = User::find($userId);
+                $user = User::query()->find($userId);
                 
                 if ($user) {
                     $newPassword = Str::random(8);

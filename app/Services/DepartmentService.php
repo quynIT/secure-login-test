@@ -36,7 +36,7 @@ class DepartmentService extends BaseService
      */
     public function getAllDepartments()
     {
-        return Department::with('users')->get();
+        return Department::query()->with('users')->get();
     }
 
     /**
@@ -47,7 +47,7 @@ class DepartmentService extends BaseService
      */
     public function getDepartmentById(int $id)
     {
-        return Department::with('users')->findOrFail($id);
+        return Department::query()->with('users')->findOrFail($id);
     }
 
     /**
@@ -61,7 +61,7 @@ class DepartmentService extends BaseService
         DB::beginTransaction();
         
         try {
-            $validated = $request->all();
+            $validated = $request->only(['name', 'description']);
             
             $department = Department::create([
                 'name' => $validated['name'],
@@ -89,8 +89,8 @@ class DepartmentService extends BaseService
         DB::beginTransaction();
         
         try {
-            $validated = $request->all();
-            $department = Department::findOrFail($id);
+            $validated = $request->only(['name', 'description']);
+            $department = Department::query()->findOrFail($id);
             
             $department->update([
                 'name' => $validated['name'],
@@ -117,7 +117,7 @@ class DepartmentService extends BaseService
         DB::beginTransaction();
         
         try {
-            $department = Department::findOrFail($id);
+            $department = Department::query()->findOrFail($id);
             if ($department->users()->count() > 0) {
                 throw new \Exception('Cannot delete department with associated users');
             }

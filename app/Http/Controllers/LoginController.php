@@ -23,13 +23,10 @@ class LoginController extends Controller
             'remember' => 'nullable|boolean'
         ]);
 
-        // Đăng nhập bằng Auth::attempt()
         if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']], $request->remember)) {
             $request->session()->regenerate();
             
-            // Kiểm tra nếu người dùng cần đổi mật khẩu
             if (Auth::user()->force_password_change) {
-                // Phân biệt admin và nhân viên
                 if (Auth::user()->role === 'root') {
                     return response()->json([
                         'success' => true,
@@ -57,7 +54,6 @@ class LoginController extends Controller
             }
         }
 
-        // Đăng nhập thất bại
         throw ValidationException::withMessages([
             'email' => ['Email hoặc mật khẩu không đúng.']
         ]);
@@ -102,19 +98,20 @@ class LoginController extends Controller
             ]);
         }
         
-        // Chuyển hướng tương ứng với role của user
         if ($user->role === 'root') {
             return redirect()->route('users.index')->with('success', 'Mật khẩu đã được thay đổi thành công');
         } else {
             return redirect()->route('employee.dashboard')->with('success', 'Mật khẩu đã được thay đổi thành công');
         }
     }
+    
     public function troll()
     {
         return view('admin.question');
     }
+
     public function answerTroll(Request $request)
-{
+    {
     $request->validate([
         'answer' => 'required|string',
     ]);
@@ -133,7 +130,6 @@ class LoginController extends Controller
                 'redirect' => route('users.index')
             ]);
         }
-        
         return redirect()->route('users.index')->with('success', 'Câu trả lời chính xác!');
     } else {
         // Nếu câu trả lời không phải "có", vẫn ở trang câu hỏi
