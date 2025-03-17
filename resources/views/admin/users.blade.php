@@ -325,7 +325,7 @@ $(document).ready(function() {
         
         // Tạo FormData để có thể gửi file
         let formData = new FormData(this);
-        formData.append('_method', 'PUT'); // Laravel method spoofing
+        formData.append('_method', 'PUT'); 
         console.log(formData);
         for (let pair of formData.entries()) {
         console.log(pair[0] + ': ' + pair[1]); 
@@ -334,8 +334,8 @@ $(document).ready(function() {
             url: `/users/${userId}`,
             type: 'POST',
             data: formData,
-            processData: false,  // Bắt buộc khi gửi FormData
-            contentType: false,  // Bắt buộc khi gửi FormData
+            processData: false,  
+            contentType: false,  
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             },

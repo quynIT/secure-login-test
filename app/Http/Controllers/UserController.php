@@ -61,19 +61,19 @@ class UserController extends Controller
     
     //Cập nhật thông tin nhân viên vào database.
      
-    public function update(UserRequest $request, $id)
+    public function update(UserRequest $request, User $user)
     {
-        $user = UserService::getInstance()->updateUser($request, $id);
-        return response()->json($user);
+        $updatedUser = UserService::getInstance()->updateUser($user, $request->validated());
+        return response()->json($updatedUser);
     }
-
+    
     
     //Xóa nhân viên khỏi database.
      
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        UserService::getInstance()->deleteUser($id);
-        return response()->json(['message' => 'Xóa nhân viên thành công!']);
+    UserService::getInstance()->deleteUser($user);
+    return response()->json(['message' => 'Xóa nhân viên thành công!']);
     }
 
 

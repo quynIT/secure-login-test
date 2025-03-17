@@ -84,26 +84,25 @@ class DepartmentService extends BaseService
      * @param int $id
      * @return Department
      */
-    public function updateDepartment(Request $request, int $id)
+    public function updateDepartment(Department $department, Request $request)
     {
-        DB::beginTransaction();
+    DB::beginTransaction();
+    
+    try {
+        $validated = $request->only(['name', 'description']);
         
-        try {
-            $validated = $request->only(['name', 'description']);
-            $department = Department::query()->findOrFail($id);
-            
-            $department->update([
-                'name' => $validated['name'],
-                'description' => $validated['description'] ?? null,
-            ]);
-            DB::commit();
-            
-            return $department;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            throw $e;
-        }
+        $department->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
+        DB::commit();
+        
+        return $department;
+    } catch (\Exception $e) {
+        DB::rollBack();
+        
+        throw $e;
+    }
     }
 
     /**
@@ -112,24 +111,17 @@ class DepartmentService extends BaseService
      * @param int $id
      * @return bool
      */
-    public function deleteDepartment(int $id)
+    public function deleteDepartment(Department $department)
     {
-        DB::beginTransaction();
-        
-        try {
-            $department = Department::query()->findOrFail($id);
-            if ($department->users()->count() > 0) {
-                throw new \Exception('Cannot delete department with associated users');
-            }
-            
-            $result = $department->delete();
-            DB::commit();
-            
-            return $result;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            throw $e;
+    try {
+        if ($department->users()->count() > 0) {
+            throw new \Exception('Cannot delete department with associated users');
         }
+        $result = $department->delete();
+        return $result;
+        
+    } catch (\Exception $e) {
+        throw $e;
+    }
     }
 }

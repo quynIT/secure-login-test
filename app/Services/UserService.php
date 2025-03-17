@@ -104,49 +104,48 @@ class UserService extends BaseService
      * @param int $id
      * @return User
      */
-    public function updateUser(Request $request, int $id)
-    {
-        DB::beginTransaction();
+    public function updateUser(User $user, array $data)
+{
+    DB::beginTransaction();
+    
+    try {
+        $oldAvatar = $user->avatar;
         
-        try {
-            $validated = $request->only(['name', 'email', 'role', 'department_id', 'password']);
-            $user = User::findOrFail($id); // Lấy user từ ID
-            $oldAvatar = $user->avatar;
-            
-            $userData = [
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'role' => $validated['role'],
-                'department_id' => $validated['department_id'],
-            ];
-            
-            // Cập nhật mật khẩu nếu có
-            if (isset($validated['password']) && !empty($validated['password'])) {
-                $userData['password'] = Hash::make($validated['password']);
-            }
-
-            // Xử lý upload avatar
-            if ($request->hasFile('avatar')) {
-                $avatarPath = $request->file('avatar')->store('avatars', 'public');
-                $userData['avatar'] = $avatarPath;
-            }
-
-            $user->update($userData);
-            DB::commit();
-            if ($oldAvatar && $request->hasFile('avatar')) {
-                Storage::disk('public')->delete($oldAvatar);
-            }
-            
-            return $user;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            if (isset($avatarPath) && Storage::disk('public')->exists($avatarPath)) {
-                Storage::disk('public')->delete($avatarPath);
-            }
-            
-            throw $e;
+        $userData = [
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'role' => $data['role'],
+            'department_id' => $data['department_id'],
+        ];
+        
+        // Cập nhật mật khẩu nếu có
+        if (isset($data['password']) && !empty($data['password'])) {
+            $userData['password'] = Hash::make($data['password']);
         }
+
+        // Xử lý upload avatar
+        if (isset($data['avatar'])) {
+            $avatarPath = $data['avatar']->store('avatars', 'public');
+            $userData['avatar'] = $avatarPath;
+        }
+
+        $user->update($userData);
+        DB::commit();
+        
+        if ($oldAvatar && isset($data['avatar'])) {
+            Storage::disk('public')->delete($oldAvatar);
+        }
+        
+        return $user;
+    } catch (\Exception $e) {
+        DB::rollBack();
+        if (isset($avatarPath) && Storage::disk('public')->exists($avatarPath)) {
+            Storage::disk('public')->delete($avatarPath);
+        }
+        
+        throw $e;
     }
+}
 
     /**
      * Delete user and associated avatar
@@ -154,25 +153,18 @@ class UserService extends BaseService
      * @param int $id
      * @return bool
      */
-    public function deleteUser(int $id)
+    public function deleteUser(User $user)
     {
-        // Start transaction
-        DB::beginTransaction();
-        
         try {
-            $user = User::query()->findOrFail($id);
             $avatarPath = $user->avatar;
             
             $result = $user->delete();
-            DB::commit();
             if ($avatarPath) {
                 Storage::disk('public')->delete($avatarPath);
             }
             
             return $result;
         } catch (\Exception $e) {
-            DB::rollBack();
-            
             throw $e;
         }
     }

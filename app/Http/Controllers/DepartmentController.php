@@ -41,20 +41,21 @@ class DepartmentController extends Controller
     /**
      * Cập nhật thông tin phòng ban vào database.
      */
-    public function update(DepartmentRequest $request, $id)
+    public function update(DepartmentRequest $request, Department $department)
     {
-        $department = DepartmentService::getInstance()->updateDepartment($request, $id);
-        
-        return response()->json($department);
+    $updatedDepartment = DepartmentService::getInstance()->updateDepartment($department, $request);
+    
+    return response()->json($updatedDepartment);
     }
+
 
     /**
      * Xóa phòng ban khỏi database.
      */
-    public function destroy($id)
+    public function destroy(Department $department)
     {
-        DepartmentService::getInstance()->deleteDepartment($id);
-        
-        return response()->json(['message' => 'Department deleted successfully']);
+    DepartmentService::getInstance()->deleteDepartment($department);
+    
+    return response()->json(['message' => 'Department deleted successfully']);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +17,6 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // Validate dữ liệu đầu vào
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -27,21 +27,13 @@ class LoginController extends Controller
             $request->session()->regenerate();
             
             if (Auth::user()->force_password_change) {
-                if (Auth::user()->role === 'root') {
-                    return response()->json([
-                        'success' => true,
-                        'redirect' => route('admin.question')  // Admin đến trang troll
-                    ]);
-                } else {
-                    return response()->json([
-                        'success' => true,
-                        'redirect' => route('password.change')  // Nhân viên đến trang đổi mật khẩu
-                    ]);
-                }
+                return response()->json([
+                    'success' => true,
+                    'redirect' => route('password.change')
+                ]);
             }
             
-            // Đã đăng nhập, kiểm tra role để chuyển hướng đúng
-            if (Auth::user()->role === 'root') {
+            if (Auth::user()->role === User::ROLE_ADMIN) {
                 return response()->json([
                     'success' => true,
                     'redirect' => route('users.index')
@@ -94,54 +86,19 @@ class LoginController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Mật khẩu đã được thay đổi thành công',
-                'redirect' => $user->role === 'root' ? route('users.index') : route('employee.profile')
+                'redirect' => $user->role === User::ROLE_ADMIN ? route('users.index') : route('employee.profile')
             ]);
         }
         
-        if ($user->role === 'root') {
+        if ($user->role === User::ROLE_ADMIN) {
             return redirect()->route('users.index')->with('success', 'Mật khẩu đã được thay đổi thành công');
         } else {
             return redirect()->route('employee.dashboard')->with('success', 'Mật khẩu đã được thay đổi thành công');
         }
     }
     
-    public function troll()
-    {
-        return view('admin.question');
-    }
-
-    public function answerTroll(Request $request)
-    {
-    $request->validate([
-        'answer' => 'required|string',
-    ]);
-    
-    $user = Auth::user();
-    
-    // Nếu câu trả lời là "có" thì cập nhật force_password_change thành false
-    if ($request->answer === 'yes') {
-        $user->force_password_change = false;
-        $user->save();
-        
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Câu trả lời chính xác!',
-                'redirect' => route('users.index')
-            ]);
-        }
-        return redirect()->route('users.index')->with('success', 'Câu trả lời chính xác!');
-    } else {
-        // Nếu câu trả lời không phải "có", vẫn ở trang câu hỏi
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Câu trả lời không chính xác! Vui lòng chọn lại.',
-                'redirect' => null  // Không chuyển hướng
-            ]);
-        }
-        
-        return redirect()->route('admin.question')->with('error', 'Câu trả lời không chính xác! Hãy chọn lại.');
-    }
-    }
+    // public function troll()
+    // {
+    //     return view('admin.question');
+    // }
 }

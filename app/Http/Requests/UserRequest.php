@@ -23,7 +23,7 @@ class UserRequest extends FormRequest
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
+            'email' => 'required|email|max:255',
             'role' => 'required|in:admin,manager,employee',
             'department_id' => 'required|exists:departments,id',
             'avatar' => 'nullable|image|max:2048', // 2MB max
