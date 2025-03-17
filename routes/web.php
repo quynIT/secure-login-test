@@ -16,26 +16,18 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/change-password', [LoginController::class, 'showChangePasswordForm'])->name('password.change');
-    Route::post('/change-password', [LoginController::class, 'changePassword'])->name('password.update');
-    // Thêm routes cho trang troll
-    Route::get('/admin-question', [LoginController::class, 'troll'])->name('admin.question');
-    Route::post('/admin-answer', [LoginController::class, 'answerTroll'])->name('admin.answer');
+    Route::post('/change-password', [LoginController::class, 'changePassword'])->name('password.update');  
 });
 
 
 Route::middleware(['auth', CheckPasswordChangeRequired::class])->group(function () {
-
-    Route::get('/', function () {
-        return view('welcome');
-    })->name('home');
-
     Route::middleware(['auth'])->group(function () {
         Route::get('/profile', [App\Http\Controllers\EmployeeController::class, 'profile'])->name('employee.profile');
         Route::put('/profile/update', [App\Http\Controllers\EmployeeController::class, 'updateProfile'])->name('employee.updateProfile');
-    });
+});
     
     // ROLE_ADMIN
-    Route::middleware([CheckRole::class.':'.User::ROLE_ADMIN])->group(function () {
+Route::middleware([CheckRole::class.':'.User::ROLE_ADMIN])->group(function () {
         Route::group(['prefix' => 'users'], function () {
             Route::get('/', [UserController::class, 'index'])->name('users.index');
             Route::get('/create', [UserController::class, 'create'])->name('users.create');
