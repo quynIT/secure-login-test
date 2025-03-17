@@ -195,13 +195,69 @@ class UserService extends BaseService
                 }
             }
             
-            // If we reach here, commit the transaction
             DB::commit();
             
             return $results;
         } catch (\Exception $e) {
-            // Something went wrong, rollback the transaction
             DB::rollBack();
+            
+            throw $e;
+        }
+    }
+    public function updateProfile(User $user, Request $request, bool $isAdmin = false)
+    {
+        DB::beginTransaction();
+        
+        try {
+            $oldAvatar = $user->avatar;
+            
+            $userData = [
+                'name' => $request->name,
+                'email' => $request->email,
+            ];
+            
+            // Cập nhật mật khẩu nếu có
+            if ($request->filled('password')) {
+                // Kiểm tra mật khẩu hiện tại nếu không phải admin
+                if (!$isAdmin && !Hash::check($request->current_password, $user->password)) {
+                    throw new \Exception('Mật khẩu hiện tại không chính xác');
+                }
+                
+                $userData['password'] = Hash::make($request->password);
+                $userData['force_password_change'] = false;
+            }
+            
+            // Nếu là admin, có thể cập nhật thêm thông tin khác
+            if ($isAdmin && $request->filled('role')) {
+                $userData['role'] = $request->role;
+            }
+            
+            if ($isAdmin && $request->filled('department_id')) {
+                $userData['department_id'] = $request->department_id;
+            }
+            
+            // Xử lý upload avatar
+            if ($request->hasFile('avatar')) {
+                $avatarPath = $request->file('avatar')->store('avatars', 'public');
+                $userData['avatar'] = $avatarPath;
+            }
+            
+            $user->update($userData);
+            DB::commit();
+            
+            // Xóa avatar cũ nếu đã upload avatar mới
+            if ($oldAvatar && $request->hasFile('avatar')) {
+                Storage::disk('public')->delete($oldAvatar);
+            }
+            
+            return $user;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            // Xóa avatar mới nếu có lỗi
+            if (isset($avatarPath) && Storage::disk('public')->exists($avatarPath)) {
+                Storage::disk('public')->delete($avatarPath);
+            }
             
             throw $e;
         }
