@@ -20,7 +20,7 @@ class UsersTableSeeder extends Seeder
                 'password' => Hash::make('password123'),
                 'role' => 'root',
                 'department_id' => 1,
-                'force_password_change' => true, //troll false
+                'force_password_change' => false, 
                 'avatar' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
