@@ -69,26 +69,20 @@ class UserService extends BaseService
                 'force_password_change' => true,
             ];
 
-            // Xử lý upload avatar nếu có
             if ($request->hasFile('avatar')) {
                 $avatarPath = $request->file('avatar')->store('avatars', 'public');
                 $userData['avatar'] = $avatarPath;
             }
 
             $user = User::create($userData);
-            
-            // Queue email to avoid transaction timeout
+
             Mail::to($user->email)->queue(new WelcomeMail($user, $password));
             
-            // If we reach here, everything went well, commit the transaction
             DB::commit();
             
             return $user;
         } catch (\Exception $e) {
-            // Something went wrong, rollback the transaction
             DB::rollBack();
-            
-            // Remove uploaded avatar if it exists
             if (isset($avatarPath) && Storage::disk('public')->exists($avatarPath)) {
                 Storage::disk('public')->delete($avatarPath);
             }

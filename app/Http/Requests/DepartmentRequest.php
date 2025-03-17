@@ -26,7 +26,7 @@ class DepartmentRequest extends FormRequest
             'description' => 'nullable|string',
         ];
 
-        // Nếu đang cập nhật department (có department_id), thêm except để bỏ qua name hiện tại
+       
         if ($this->route('id')) {
             $rules['name'] = 'sometimes|string|unique:departments,name,' . $this->route('id') . '|max:255';
         }

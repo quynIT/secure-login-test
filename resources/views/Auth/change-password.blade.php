@@ -278,7 +278,6 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Password visibility toggle
         function togglePassword(fieldId) {
             const passwordField = document.getElementById(fieldId);
             const icon = passwordField.parentNode.querySelector('.toggle-password i');
@@ -294,7 +293,6 @@
             }
         }
         
-        // Password strength checker
         const passwordInput = document.getElementById('password');
         const strengthBar = document.getElementById('strengthBar');
         const feedback = document.getElementById('passwordFeedback');
@@ -304,53 +302,47 @@
             let strength = 0;
             let tips = [];
             
-            // Length check
             if (password.length >= 8) {
                 strength += 25;
             } else {
                 tips.push("Mật khẩu phải có ít nhất 8 ký tự");
             }
             
-            // Lowercase check
             if (password.match(/[a-z]/)) {
                 strength += 25;
             } else {
                 tips.push("Thêm chữ cái thường");
             }
             
-            // Uppercase check
             if (password.match(/[A-Z]/)) {
                 strength += 25;
             } else {
                 tips.push("Thêm chữ cái hoa");
             }
             
-            // Number or special char check
             if (password.match(/[0-9]/) || password.match(/[^A-Za-z0-9]/)) {
                 strength += 25;
             } else {
                 tips.push("Thêm số hoặc ký tự đặc biệt");
             }
             
-            // Update UI
             strengthBar.style.width = strength + '%';
             
-            // Color based on strength
             if (strength <= 25) {
-                strengthBar.style.backgroundColor = '#dc3545'; // Danger
+                strengthBar.style.backgroundColor = '#dc3545'; 
                 feedback.style.color = '#dc3545';
             } else if (strength <= 50) {
-                strengthBar.style.backgroundColor = '#ffc107'; // Warning
+                strengthBar.style.backgroundColor = '#ffc107'; 
                 feedback.style.color = '#ffc107';
             } else if (strength <= 75) {
-                strengthBar.style.backgroundColor = '#0dcaf0'; // Info
+                strengthBar.style.backgroundColor = '#0dcaf0'; 
                 feedback.style.color = '#0dcaf0';
             } else {
-                strengthBar.style.backgroundColor = '#198754'; // Success
+                strengthBar.style.backgroundColor = '#198754'; 
                 feedback.style.color = '#198754';
             }
             
-            // Update feedback text
+           
             if (tips.length > 0) {
                 feedback.textContent = tips.join(', ');
             } else {
@@ -358,7 +350,6 @@
             }
         });
         
-        // Password match checker
         const confirmInput = document.getElementById('password_confirmation');
         const matchFeedback = document.getElementById('matchFeedback');
         
@@ -370,11 +361,9 @@
             }
         });
         
-        // Form submission with AJAX
         document.getElementById('password-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // Form validation
+        
             if (passwordInput.value.length < 8) {
                 feedback.textContent = 'Mật khẩu phải có ít nhất 8 ký tự';
                 return;
@@ -384,8 +373,6 @@
                 matchFeedback.textContent = 'Mật khẩu không khớp';
                 return;
             }
-            
-            // AJAX submission
             const formData = new FormData(this);
             
             fetch(this.action, {
@@ -398,18 +385,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Show success message
                     document.getElementById('form-container').classList.add('d-none');
                     const successMessage = document.getElementById('success-message');
                     successMessage.classList.remove('d-none');
                     document.querySelector('.success-checkmark').style.display = 'block';
                     
-                    // Redirect after 2 seconds
                     setTimeout(() => {
                         window.location.href = data.redirect;
                     }, 2000);
                 } else {
-                    // Show error
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'alert alert-danger';
                     errorDiv.textContent = data.message || 'Có lỗi xảy ra';

@@ -200,7 +200,6 @@
     </div>
 <script>
 $(document).ready(function() {
-    // Thiết lập CSRF token cho tất cả các request AJAX
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -224,7 +223,7 @@ $(document).ready(function() {
         $('#name-error, #description-error, #edit-name-error, #edit-description-error').text('');
     }
 
-    // Thêm phòng ban bằng AJAX
+    // Thêm phòng ban 
     $('#addDepartmentForm').submit(function(e) {
         e.preventDefault();
         resetFormErrors();
@@ -281,7 +280,7 @@ $(document).ready(function() {
         });
     });
 
-    // Cập nhật phòng ban bằng AJAX
+    // Cập nhật phòng ban 
     $('#editDepartmentForm').submit(function(e) {
         e.preventDefault();
         resetFormErrors();
@@ -334,7 +333,7 @@ $(document).ready(function() {
     $('#deleteDepartmentModal').removeClass('hidden');
 });
 
-    // Xóa phòng ban bằng AJAX
+    // Xóa phòng ban 
     $('#confirm-delete').click(function() {
         let departmentId = $(this).data('id');
         

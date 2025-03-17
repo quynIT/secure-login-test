@@ -29,12 +29,10 @@ class UserRequest extends FormRequest
             'avatar' => 'nullable|image|max:2048', // 2MB max
         ];
 
-        // Nếu đang cập nhật user (có user_id), thêm except để bỏ qua email hiện tại
         if ($this->route('id')) {
             $rules['email'] = 'required|email|max:255|unique:users,email,' . $this->route('id');
         }
 
-        // Password là bắt buộc khi tạo mới, nhưng tùy chọn khi cập nhật
         if (!$this->route('id')) {
             $rules['password'] = 'nullable|min:8';
         } else {

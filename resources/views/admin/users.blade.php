@@ -247,7 +247,7 @@
 </div>
 <script>
 $(document).ready(function() {
-    // Thiết lập CSRF token cho tất cả các request AJAX
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -264,7 +264,7 @@ $(document).ready(function() {
         $('#addUserModal, #editUserModal').addClass('hidden');
     });
 
-    // Thêm nhân viên bằng AJAX
+    // Thêm nhân viên 
     $('#addUserForm').submit(function(e) {
     e.preventDefault();
     let formData = new FormData(this);
@@ -278,7 +278,6 @@ $(document).ready(function() {
         success: function(response) {
             $('#addUserModal').addClass('hidden');
             showSuccessAlert();
-            // Làm mới trang sau khi thêm thành công
             setTimeout(function() {
                 location.reload();
             }, 1000);
@@ -286,8 +285,6 @@ $(document).ready(function() {
         error: function(xhr) {
             let errors = xhr.responseJSON?.errors || {};
             let errorMessage = 'Có lỗi xảy ra:';
-            
-            // Hiển thị lỗi cụ thể cho từng trường
             $.each(errors, function(field, messages) {
                 errorMessage += '\n- ' + messages.join(', ');
             });
@@ -318,7 +315,7 @@ $(document).ready(function() {
         });
     });
 
-    // Cập nhật nhân viên bằng AJAX
+    // Cập nhật nhân viên 
     $('#editUserForm').submit(function(e) {
         e.preventDefault();
         let userId = $('#edit_user_id').val();
@@ -361,7 +358,7 @@ $(document).ready(function() {
         });
     });
 
-    // Xóa nhân viên bằng AJAX
+    // Xóa nhân viên 
     $('.delete-user').click(function() {
         let userId = $(this).data('id');
         
@@ -397,19 +394,14 @@ $(document).ready(function() {
 </script>
 <script>
     $(document).ready(function() {
-    // Thiết lập CSRF token cho tất cả các request AJAX
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
-    // Đóng các modal
     $('.close-modal').click(function() {
         $('#resetPasswordModal, #resetResultModal').addClass('hidden');
     });
-
-    // Xử lý checkbox
     $('#select-all').change(function() {
         $('.user-checkbox').prop('checked', $(this).prop('checked'));
         updateResetButton();
@@ -502,7 +494,6 @@ $(document).ready(function() {
         });
     });
 
-    // Các chức năng khác của bạn...
 });
 </script>
 </body>
