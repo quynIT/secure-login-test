@@ -9,53 +9,31 @@ class DepartmentService extends BaseService
 {
     protected ?Department $department = null;
 
-    /**
-     * Set department model
-     * 
-     * @param Department $department
-     * @return $this
-     */
     public function setDepartment(Department $department)
     {
         $this->department = $department;
         return $this;
     }
 
-    /**
-     * @return Department|null
-     */
+  
     public function getDepartment(): Department|null
     {
         return $this->department;
     }
 
-    /**
-     * Get all departments with users
-     *
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
+   
     public function getAllDepartments()
     {
         return Department::query()->with('users')->get();
     }
 
-    /**
-     * Get department by ID with users
-     *
-     * @param int $id
-     * @return Department
-     */
+    
     public function getDepartmentById(int $id)
     {
         return Department::query()->with('users')->findOrFail($id);
     }
 
-    /**
-     * Create new department from request
-     *
-     * @param Request $request
-     * @return Department
-     */
+   
     public function createDepartment(Request $request)
     {
         DB::beginTransaction();
@@ -77,13 +55,7 @@ class DepartmentService extends BaseService
         }
     }
 
-    /**
-     * Update department information
-     *
-     * @param Request $request
-     * @param int $id
-     * @return Department
-     */
+    
     public function updateDepartment(Department $department, Request $request)
     {
     DB::beginTransaction();
@@ -105,12 +77,7 @@ class DepartmentService extends BaseService
     }
     }
 
-    /**
-     * Delete department
-     *
-     * @param int $id
-     * @return bool
-     */
+    
     public function deleteDepartment(Department $department)
     {
     try {

@@ -4,6 +4,7 @@ namespace App\Services;
 
 abstract class BaseService
 {
+    
     /**
      * Create new service instance
      *
